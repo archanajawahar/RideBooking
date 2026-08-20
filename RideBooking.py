@@ -22,21 +22,34 @@ class RideBooking:
             "Premium": True
         }
 
-    def calculate_fare(self, distance, passengers, vehicle, booking_time):
+    def calculate_fare(self, customer_id, pickup, drop,
+                       distance, passengers, vehicle, booking_time):
 
-        # Validate vehicle
-        if vehicle not in self.base_fare:
-            return "Invalid vehicle type"
+        # Customer validation
+        if not customer_id:
+            return "Invalid customer ID"
 
-        # Validate distance
+        # Location validation
+        if not pickup or not drop:
+            return "Invalid pickup or drop location"
+
+        # Distance validation
         if distance <= 0:
             return "Invalid distance"
 
-        # Validate passengers
+        # Passenger validation
         if passengers <= 0 or passengers > 4:
             return "Invalid passenger count"
 
-        # Check driver availability
+        # Vehicle validation
+        if vehicle not in self.base_fare:
+            return "Invalid vehicle type"
+
+        # Booking time validation
+        if booking_time < 0 or booking_time > 23:
+            return "Invalid booking time"
+
+        # Driver availability
         if not self.available_drivers[vehicle]:
             return "Driver unavailable"
 
@@ -54,7 +67,7 @@ class RideBooking:
         if booking_time >= 22 or booking_time < 6:
             fare += fare * 0.10
 
-        # Passenger surcharge
+        # Extra passenger surcharge
         if passengers > 2:
             fare += (passengers - 2) * 20
 
@@ -62,7 +75,7 @@ class RideBooking:
         if fare > 1000:
             fare -= fare * 0.10
 
-        return fare
+        return round(fare, 2)
 
     def assign_driver(self, vehicle):
 
@@ -83,12 +96,19 @@ ride = RideBooking()
 print("===== RIDE BOOKING SYSTEM =====")
 
 fare = ride.calculate_fare(
+    customer_id="C101",
+    pickup="Chennai Central",
+    drop="Guindy",
     distance=20,
     passengers=2,
     vehicle="Sedan",
     booking_time=14
 )
 
+print("Customer ID: C101")
+print("Pickup: Chennai Central")
+print("Drop: Guindy")
+print("Vehicle: Sedan")
 print("Final Fare:", fare)
 
 print(ride.assign_driver("Sedan"))
